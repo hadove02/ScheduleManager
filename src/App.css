@@ -1,0 +1,849 @@
+:root {
+  --ink: #e8eaf0;
+  --ink-light: #b0b8c8;
+  --ink-faint: #6a7488;
+  --paper: #202632;
+  --paper-dark: #1a1f2b;
+  --paper-mid: #2a3040;
+  --accent: #0064FF;
+  --accent-warm: #0064FF;
+  --accent-teal: #0064FF;
+  --line: rgba(255,255,255,0.08);
+  --shadow: rgba(0,0,0,0.3);
+  --tab-active: #e8eaf0;
+  --tab-inactive: #6a7488;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  height: 100vh;
+  overflow: hidden;
+  background-image:
+          repeating-linear-gradient(
+                  0deg,
+                  transparent,
+                  transparent 27px,
+                  rgba(255,255,255,0.03) 27px,
+                  rgba(255,255,255,0.03) 28px
+          );
+}
+
+/* ── 최상층 컨테이너 ── */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ── 탭 전환 컨테이너 ── */
+.tab-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper);
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  padding: 0 32px;
+  gap: 0;
+}
+
+.tab-logo {
+  font-family: 'Gowun Batang', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 14px 24px 14px 0;
+  letter-spacing: 0.18em;
+  border-right: 1px solid var(--line);
+  margin-right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.tab-logo span.logo-accent {
+  color: var(--accent);
+}
+
+.tab-logo-placeholder {
+  display: none;
+}
+
+.tab-btn {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--tab-inactive);
+  background: none;
+  border: none;
+  padding: 14px 20px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+
+.tab-btn.active {
+  color: var(--tab-active);
+  font-weight: 700;
+}
+
+.tab-btn.active::after {
+  transform: scaleX(1);
+}
+
+/* ── 본문 컨테이너 ── */
+.body-container {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── 이미지 존 (지도 / 달력) ── */
+.image-zone {
+  flex: 0 0 55%;
+  position: relative;
+  border-right: 2px solid var(--ink);
+  overflow: hidden;
+}
+
+/* 지도 */
+#map-container {
+  width: 100%;
+  height: 100%;
+}
+
+#map {
+  width: 100%;
+  height: calc(100% - 52px);
+}
+
+.map-search-bar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.map-search-bar input {
+  flex: 1;
+  border: 1px solid var(--ink-faint);
+  background: var(--paper-mid);
+  padding: 7px 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.map-search-bar input:focus {
+  border-color: var(--accent);
+}
+
+.map-search-bar button {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  padding: 7px 16px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.map-search-bar button:hover { background: var(--accent); }
+
+/* 달력 */
+#calendar-container {
+  width: 100%;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  background: var(--paper);
+  overflow-y: auto;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cal-title {
+  font-family: 'Gowun Batang', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+}
+
+.cal-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.cal-nav button {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  width: 30px;
+  height: 30px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cal-nav button:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+
+.cal-weekday {
+  text-align: center;
+  padding: 8px 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+}
+
+.cal-weekday:first-child { color: var(--accent); }
+.cal-weekday:last-child { color: var(--ink-faint); }
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  flex: 1;
+}
+
+.cal-day {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  min-height: 72px;
+  padding: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.cal-day:nth-child(7n) { border-right: none; }
+.cal-day:hover { background: var(--paper-mid); }
+.cal-day.other-month .day-num { color: var(--ink-faint); opacity: 0.4; }
+.cal-day.today .day-num {
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-day.selected {
+  background: rgba(0,100,255,0.06);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.day-num {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.cal-day:nth-child(7n+1) .day-num { color: var(--accent); }
+.cal-day:nth-child(7n) .day-num { color: var(--ink-faint); }
+
+.day-dot-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.day-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ── 텍스트 컨테이너 ── */
+.text-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+/* ── 지도 탭 텍스트 레이아웃 ── */
+.place-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 장소 컨테이너 (수평) */
+.place-top {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+/* 장소 설명 컨테이너 (수직) */
+.place-info-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+  padding: 16px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.place-info-label {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.place-info-name {
+  font-family: 'Gowun Batang', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.place-info-addr {
+  font-size: 0.78rem;
+  color: var(--ink-light);
+  line-height: 1.5;
+}
+
+.place-info-category {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.place-info-phone {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+.place-info-empty {
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  font-style: italic;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.save-place-btn {
+  margin-top: auto;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  padding: 9px 14px;
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.save-place-btn:hover { background: var(--accent); }
+.save-place-btn:disabled { background: var(--ink-faint); cursor: default; }
+
+/* 메모 존 */
+.memo-col {
+  flex: 0 0 42%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 8px;
+}
+
+.memo-col textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--line);
+  background: var(--paper-mid);
+  padding: 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  outline: none;
+  line-height: 1.7;
+  min-height: 120px;
+}
+
+.memo-col textarea:focus { border-color: var(--accent); }
+
+/* 장소 존 (스크롤 리스트) */
+.saved-places-zone {
+  flex: 1;
+  overflow-y: auto;
+  border-top: 2px solid var(--ink);
+}
+
+.saved-places-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: var(--paper-dark);
+  z-index: 2;
+}
+
+.saved-places-title {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+}
+
+.saved-count {
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.saved-place-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.saved-place-item:hover { background: var(--paper-mid); }
+
+.saved-place-idx {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  min-width: 20px;
+  margin-top: 2px;
+}
+
+.saved-place-texts {
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-place-name {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.saved-place-addr {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.saved-place-memo {
+  font-size: 0.7rem;
+  color: var(--accent);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--ink-faint);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.delete-btn:hover { color: var(--accent); }
+
+.empty-list {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  font-style: italic;
+  line-height: 1.8;
+}
+
+/* ── 메모 탭 텍스트 레이아웃 ── */
+.memo-panel {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.memo-date-display {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-dark);
+  flex-shrink: 0;
+}
+
+.memo-date-big {
+  font-family: 'Gowun Batang', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+
+.memo-date-sub {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+
+.memo-schedule-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.schedule-section-label {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+}
+
+.schedule-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.schedule-input-row input {
+  flex: 1;
+  border: 1px solid var(--line);
+  background: var(--paper-mid);
+  padding: 8px 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  outline: none;
+}
+
+.schedule-input-row input:focus { border-color: var(--accent); }
+
+.schedule-input-row input[type="time"] {
+  flex: 0 0 auto;
+  width: 90px;
+}
+
+.schedule-add-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.schedule-add-btn:hover { background: #0050cc; }
+
+.memo-textarea-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.memo-textarea-wrap textarea {
+  resize: none;
+  border: 1px solid var(--line);
+  background: var(--paper-mid);
+  padding: 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  outline: none;
+  line-height: 1.7;
+  height: 90px;
+}
+
+.memo-textarea-wrap textarea:focus { border-color: var(--accent); }
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--paper-mid);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  font-size: 0.82rem;
+  color: var(--ink);
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.schedule-item .s-time {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.75rem;
+  color: var(--accent);
+  min-width: 40px;
+}
+
+.schedule-item .s-text { flex: 1; }
+
+.schedule-item .s-delete {
+  background: none;
+  border: none;
+  color: var(--ink-faint);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: color 0.15s;
+}
+
+.schedule-item .s-delete:hover { color: var(--accent); }
+
+/* 메모탭 장소 존 */
+.memo-place-zone {
+  flex-shrink: 0;
+  border-top: 2px solid var(--ink);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.memo-place-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--paper-dark);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.memo-place-title {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+}
+
+.memo-place-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.memo-place-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 0.8rem;
+}
+
+.memo-place-item:hover { background: var(--paper-mid); }
+
+.memo-place-item.attached {
+  background: rgba(0,100,255,0.05);
+  border-left: 3px solid var(--accent);
+}
+
+.memo-place-check {
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.memo-place-item-name {
+  font-family: 'Gowun Batang', serif;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.memo-place-item-addr {
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+/* 검색 결과 드롭다운 */
+.search-results-overlay {
+  position: absolute;
+  top: 52px;
+  left: 0; right: 0;
+  background: var(--paper-mid);
+  border: 1px solid var(--line);
+  border-top: none;
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px var(--shadow);
+  display: none;
+}
+
+.search-result-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.search-result-item:hover { background: var(--paper-mid); }
+.search-result-item:last-child { border-bottom: none; }
+
+.sr-name {
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sr-addr {
+  font-size: 0.73rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ink-faint); border-radius: 2px; }
+
+/* 토스트 알림 */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Gowun Batang', serif;
+  font-size: 0.82rem;
+  padding: 10px 20px;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.no-map-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  color: var(--ink-faint);
+  font-size: 0.85rem;
+  font-style: italic;
+  background: var(--paper-dark);
+}
+
+.no-map-msg .icon { font-size: 2.5rem; opacity: 0.4; }
